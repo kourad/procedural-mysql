@@ -3,7 +3,7 @@
   "version": "0.1.4",
   "description": "",
   "main": "index.js",
-  "bin": "./sql_updater.js",
+  "bin": "./index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
