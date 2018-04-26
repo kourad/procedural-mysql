@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kourad/procedural-mysql.git"
+    "url": "https://github.com/kourad/procedural-mysql.git"
   },
   "keywords": [
     "mysql",
