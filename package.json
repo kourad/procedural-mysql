@@ -1,0 +1,24 @@
+{
+  "name": "procedural-mysql",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kourad/procedural-mysql.git"
+  },
+  "keywords": [
+    "mysql",
+    "functions",
+    "procedures"
+  ],
+  "author": "Antonio Lopez Navarro",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kourad/procedural-mysql/issues"
+  },
+  "homepage": "https://github.com/kourad/procedural-mysql#readme"
+}
