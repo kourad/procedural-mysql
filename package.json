@@ -4,14 +4,14 @@
   "description": "",
   "main": "index.js",
   "bin": {
-    "proceduralmysql": "./index.js"
+    "proceduralmysql": "index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/kourad/procedural-mysql.git"
+    "url": "git+https://github.com/kourad/procedural-mysql.git"
   },
   "keywords": [
     "mysql",
