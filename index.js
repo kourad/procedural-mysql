@@ -3,7 +3,7 @@
 const path = require( "path" )
 const fs = require( "fs" )
 const mysql = require("mysql");
-const version = "0.2.0"
+const version = "0.2.1"
 
 
 const help = `
