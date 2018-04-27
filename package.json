@@ -1,10 +1,6 @@
 {
   "name": "procedural-mysql",
-<<<<<<< HEAD
-  "version": "0.1.5",
-=======
   "version": "0.2.0",
->>>>>>> 9f41581288bc42bcec694dc524a40e291e15238a
   "description": "",
   "main": "index.js",
   "bin": "./index.js",
