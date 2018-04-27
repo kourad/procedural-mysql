@@ -3,6 +3,8 @@
 const path = require( "path" )
 const fs = require( "fs" )
 const mysql = require("mysql");
+const version = "0.2.0"
+
 
 const help = `
 npm run sql commands:
@@ -24,10 +26,11 @@ npm run sql [options] [file]
 
 let running = false
 let options = {
-    config: 'sql_updater.config.json',     // archivo de configuracion
-    file: '',       // sube un solo archivo
-    all: false,     // sube todos los archivos del directorio
-    watch: false,       // observa un solo archivo
+    config: 'procedural-mysql.config.json',     // archivo de configuracion por defecto
+    file: '',           // sube un solo archivo
+    generate: false,    // sube todos los archivos del directorio
+    remove: false,      // elimina una funcion
+    watch: false,       // observa un archivo o directorio
 }
 
 
@@ -152,30 +155,61 @@ function fileWatcher( fileName )
  */
 function captureArgs( args )
 {
-    if( args.length !== 2 )
+    try
     {
-        let i = 2;
+        args = args.slice(2)   
+        let i = 0;
         let l = args.length;
         for( i; i < l; i++ )
         {
             switch( args[i] )
             {
-                case 'help':
+                case '-h':
                     console.log( help )
                     process.exit();
                     return;
-                case 'all':
-                    options.all = true;
-                    break;
-                case 'w':
+                case '-v':
+                    console.log(version)
+                    process.exit();
+                    return;
+                case '-w':
+                    if( args.includes('-rm') )
+                        throw {code: '-w'}
                     options.watch = true;
                     break;
+                case '-c':
+                    if( !args[i+1].endsWith('.json') )
+                        throw { code: 'c' }
+                    options.config = args[i+1];
+                    break;
+                case '-g':
+                    if( args.includes('-rm') )
+                        throw {code: '-g'}
+                    options.generate = true;
+                    break;
+                case '-rm':
+                    if( args.includes('-g') || args.includes('-w') )
+                        throw {code: '-rm'}
+                    options.remove = true;
+                    break;
                 default:
-                    options.file = args[i];
+                    if( !args[i].endsWith('.sql') && !args[i].endsWith('.json') ) 
+                        throw { code: 'file'}
+                    if( args[i].endsWith('.sql') )
+                        options.file = args[i];
                     break;
             }
         }
+        
+
+        
     }
+    catch(error)
+    {
+        console.log( 'Error: ', error.code )
+        process.exit()
+    }
+    
 }
 
 
@@ -214,40 +248,22 @@ async function uploadAll( directory )
 captureArgs( process.argv )
 
 
+
+
+
+
 const dir_config = path.join( __dirname, options.config )
 const config = JSON.parse( fs.readFileSync( dir_config,  'utf8') );
 const dir = path.join(__dirname, '../', config.directory)
-const connection = mysql.createPool(config.db);
-
+const connection = mysql.createPool(config.db); 
 console.log( 'Config loaded from: [\x1b[32m%s\x1b[0m]', dir_config )
 
 
 
-if( options.all )
-{
-    uploadAll( dir )
-    .then( () => 
-    {
-        let d = new Date()
-        console.log( `[${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}]: [\x1b[32mALL LOADED SUCCESSFULLY!!\x1b[0m]\n\n` )
-        
-        if( options.watch )
-        {
-            directoryWatcher(dir)
-        }
-        else
-            process.exit();
-    } )
-    .catch( (error) => 
-    {
-        let d = new Date()
-        console.log( `[${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}] ${fileName}: [\x1b[31mFAIL\x1b[0m]` )
-        console.log('\n----------------------------\n')
-        console.log(error)
-        console.log('\n----------------------------\n')
-    } )
-}
-else if( options.file )
+/**
+ * Sube un archivo y puede seguirlo despues
+ */
+if( options.file !== '' && !options.generate )
 {
     uploadSQL( path.join( dir, options.file ) )
     .then( () => 
@@ -271,8 +287,67 @@ else if( options.file )
         console.log('\n----------------------------\n')
     } )
 }
-else
+
+/**
+ * Genera todos los archivos y observa uno en concreto
+ */
+if( options.file !== '' && options.generate && options.watch)
+{
+    uploadAll( dir )
+    .then( () => 
+    {
+        let d = new Date()
+        console.log( `[${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}]: [\x1b[32mALL LOADED SUCCESSFULLY!!\x1b[0m]\n\n` )
+        
+        if( options.watch )
+        {
+            fileWatcher( path.join( dir, options.file ) )
+        }
+        else
+            process.exit();
+    } )
+    .catch( (error) => 
+    {
+        let d = new Date()
+        console.log( `[${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}] ${fileName}: [\x1b[31mFAIL\x1b[0m]` )
+        console.log('\n----------------------------\n')
+        console.log(error)
+        console.log('\n----------------------------\n')
+    } )
+}
+
+/**
+ * Genera todos los archivos y observa el directorio
+ */
+if( options.file === '' && options.generate && options.watch )
+{
+    uploadAll( dir )
+    .then( () => 
+    {
+        let d = new Date()
+        console.log( `[${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}]: [\x1b[32mALL LOADED SUCCESSFULLY!!\x1b[0m]\n\n` )
+        
+        if( options.watch )
+        {
+            directoryWatcher(dir)
+        }
+        else
+            process.exit();
+    } )
+    .catch( (error) => 
+    {
+        let d = new Date()
+        console.log( `[${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}] ${fileName}: [\x1b[31mFAIL\x1b[0m]` )
+        console.log('\n----------------------------\n')
+        console.log(error)
+        console.log('\n----------------------------\n')
+    } )
+}
+
+/**
+ * Obsreva el directorio
+ */
+if( options.file === '' && !options.generate && options.watch )
 {
     directoryWatcher(dir)
 }
-

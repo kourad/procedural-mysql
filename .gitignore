@@ -1,2 +1,4 @@
 node_modules/
 docs/
+procedural-mysql.config.json
+sql/
