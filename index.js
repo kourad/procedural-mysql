@@ -3,24 +3,27 @@
 const path = require( "path" )
 const fs = require( "fs" )
 const mysql = require("mysql");
-const version = "0.2.1"
+const version = "0.2.3"
 
 
 const help = `
-npm run sql commands:
+procedural-mysql ${version} CLI help commands:
 
-npm run sql [options] [file]
+procedural-mysql [options] [<SQL file>]
 --------------------------
 
-
+By default all configurations all loaded from a json called 'procedural-mysql.config.json' on the root project folder
 
 
 [options]
-  help                Muestra la ayuda
-  all                 Sube todos los ficheros al directorio
-  w                   Habilita el perseguir archivos o directorios
-
-[file]              archivo a subir 
+  -h                    Shows this help file
+  -v                    Shows the project version  
+  -c config.json        Sets the path of configuration file
+  -w                    Watch the directory defined by the config json and uploads to sql server when a change is detected
+  -g -w                 Uploads all files in the directory and later watch the directory
+  file                  Uplads one file to sql server
+  -w file               Watch one file and uploads to sql server when a change is detected
+  -w -g file            Upload all files and then watchs a one file 
 `
 
 
