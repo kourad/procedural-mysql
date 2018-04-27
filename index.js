@@ -254,7 +254,7 @@ const app_directory = process.cwd()
 
 const dir_config = path.join( app_directory, options.config )
 const config = JSON.parse( fs.readFileSync( dir_config,  'utf8') );
-const dir = path.join(app_directory, '../', config.directory)
+const dir = path.join(app_directory, config.directory)
 const connection = mysql.createPool(config.db); 
 console.log( 'Config loaded from: [\x1b[32m%s\x1b[0m]', dir_config )
 
