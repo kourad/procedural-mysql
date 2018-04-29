@@ -1,5 +1,4 @@
 # PROCEDURAL MYSQL
----
 
 CLI to make more easy write functions on mysql and uploads to mysql server
 
